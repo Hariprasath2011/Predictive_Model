@@ -70,15 +70,15 @@ Outputs:
         Handles high‑dimensional feature expansions from one‑hot encoding
 
         (c) LightGBM Regressor
+   
         Fast, gradient‑boosted decision trees
         Performs extremely well on tabular data
         Supports leaf‑wise growth for high accuracy
         Handles categorical splits efficiently
-       These three models are compared based on:RMSE,MAE,R² Score
-
+        These three models are compared based on:RMSE,MAE,R² Score
         The best performing model is saved as:best_model.pkl
    
-4. Multi‑Output Architecture:
+5. Multi‑Output Architecture:
 
        Since your prediction has two outputs, you used:
 
@@ -91,3 +91,4 @@ Outputs:
           Joint learning from shared features
         Stable prediction across both cost & time
         Reduced error propagation
+

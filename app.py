@@ -84,7 +84,6 @@ def main():
 
     st.title("🏗️ Construction Time & Cost Predictor")
 
-    # Try loading model & preprocessor
     try:
         preprocessor, model = load_preprocessor_and_model()
     except Exception as e:

@@ -5,21 +5,12 @@ import pandas as pd
 import streamlit as st
 from pathlib import Path
 
-# ============================================================
-#  CONFIGURATION
-# ============================================================
-
-# Paths to your saved models (adjust if your filenames differ)
 PREPROCESSOR_PATH = Path("models/preprocessor.pkl")
-MODEL_PATH = Path("models/lgbm.pkl")   # or best_model.pkl, etc.
+MODEL_PATH = Path("models/lgbm.pkl")   
 
-# Ollama configuration
 OLLAMA_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "gemma:2b"  # you already confirmed gemma:2b is running
+OLLAMA_MODEL = "gemma:2b"  
 
-# ============================================================
-#  HELPER FUNCTIONS
-# ============================================================
 
 @st.cache_resource
 def load_preprocessor_and_model():
@@ -43,7 +34,7 @@ def call_ollama(prompt: str) -> str:
         payload = {
             "model": OLLAMA_MODEL,
             "prompt": prompt,
-            "stream": False,      # important: get full response in one JSON
+            "stream": False,      
             "temperature": 0.2,
             "max_tokens": 512
         }
@@ -52,10 +43,9 @@ def call_ollama(prompt: str) -> str:
         resp.raise_for_status()
         data = resp.json()
 
-        # Ollama non-stream response typically has a "response" field
         text = data.get("response")
         if text is None:
-            # fallback: show raw JSON if format is different
+  
             text = json.dumps(data, indent=2)
         return text
 
@@ -86,11 +76,6 @@ Tasks:
 4. Keep the answer short, structured in bullet points.
 """
 
-
-# ============================================================
-#  STREAMLIT APP UI
-# ============================================================
-
 def main():
     st.set_page_config(
         page_title="Construction Time & Cost Predictor with AI Assistant",
@@ -109,7 +94,6 @@ def main():
     st.markdown("---")
     st.header("📥 Project Inputs")
 
-    # You can adjust default values & ranges as needed
     col1, col2 = st.columns(2)
 
     with col1:
@@ -129,7 +113,7 @@ def main():
     st.markdown("---")
 
     if st.button(" Predict Time & Cost "):
-        # Collect features into a dict
+
         features = {
             "land_size": land_size,
             "materials_cost": materials_cost,
@@ -142,18 +126,16 @@ def main():
             "demand_supply": demand_supply,
         }
 
-        # Convert to DataFrame and preprocess
         try:
             input_df = pd.DataFrame([features])
             X = preprocessor.transform(input_df)
-            prediction = model.predict(X)[0]  # expecting [time_days, total_cost]
+            prediction = model.predict(X)[0]  
             time_days = float(prediction[0])
             total_cost = float(prediction[1])
         except Exception as e:
             st.error(f"Error during prediction: {e}")
             return
 
-        # Show numeric predictions
         st.subheader("📊 Prediction")
         col_time, col_cost = st.columns(2)
         with col_time:
@@ -163,7 +145,6 @@ def main():
 
         st.markdown("---")
 
-        # Build prompt & call Ollama for explanation
         with st.spinner("Asking local AI assistant ..."):
             prompt = build_explanation_prompt(features, time_days, total_cost)
             ai_text = call_ollama(prompt)
@@ -171,7 +152,6 @@ def main():
         st.subheader("🤖 AI Assistant Explanation")
         st.write(ai_text)
 
-    # Optional: a separate chat box for general questions
     st.markdown("---")
     st.header("💬 Ask the AI Assistant ")
     user_q = st.text_area(
